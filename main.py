@@ -39,9 +39,9 @@ class TeatrApp:
         self.editor1.grid(row=0, column=0, sticky=tk.NSEW)
         self.listBox = tk.Listbox(self.middle, bg='green')
         listbox = self.listBox
-        listbox.insert(1, "Nachos")
-        listbox.insert(2, "Sandwich")
-        listbox.insert(3, "Burger")
+        listbox.insert(1, "frytki")
+        listbox.insert(2, "sledziki")
+        listbox.insert(3, "obwarzanki")
 
         # --- StatusBar -------
         status_bar = tk.Frame(self.window)  # , background='yellow')

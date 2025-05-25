@@ -14,8 +14,8 @@ class TeatrApp:
         self.event.trace("w", self.callback)
         self.klient = Klient()
 
-        self.window.geometry('1024x768')
-        self.window.title('Live Feed')
+        self.window.geometry('1024x600')
+        self.window.title('Teatr')
         self.window.grid_rowconfigure(1, weight=1)
         self.window.grid_columnconfigure(0, weight=1)
 

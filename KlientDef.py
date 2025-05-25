@@ -9,7 +9,7 @@ class Klient:
         self.telefon = ""
 
     def __str__(self):
-        return f'Klient:{self.imie_nazwisko}, Adres:{self.miejscowosc}, ul.{self.adres}, email:{seld.email}, telefon:{self.telefon}'
+        return f'Klient:{self.imie_nazwisko}, Adres:{self.miejscowosc}, ul.{self.adres}, email:{self.email}, telefon:{self.telefon}'
 
     def kopiuj_z(self, zrodlo):
         self.imie_nazwisko = zrodlo.imie_nazwisko
@@ -45,4 +45,4 @@ class Klient:
             dane_ok = "@" in v
         elif co_wstaw == "telefon":
             self.telefon = v
-        return dane_ok;
+        return dane_ok

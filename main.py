@@ -1,5 +1,8 @@
 import tkinter as tk
+import tkinter.font as tkFont
+from tkinter import ttk
 import KlientEntry
+
 from KlientDef import *
 
 
@@ -20,7 +23,7 @@ class TeatrApp:
         self.window.grid_columnconfigure(0, weight=1)
 
         # -- menu ---
-        self._doda_glowne_menu(self.window)
+        self._dodaj_glowne_menu(self.window)
 
         # button_bar
         button_bar = tk.Frame(self.window)  # , background='magenta'  )
@@ -33,15 +36,18 @@ class TeatrApp:
         self.middle = tk.Frame(self.window, background='green')
         self.middle.grid(row=1, column=0, padx=5, pady=5, sticky=tk.NSEW)
         self.middle.grid_rowconfigure(0, weight=1)
-        self.middle.grid_columnconfigure(0, weight=1)
+        self.middle.grid_columnconfigure(0, weight=0)
 
         self.editor1 = tk.Text(self.middle, bg='white')
         self.editor1.grid(row=0, column=0, sticky=tk.NSEW)
-        self.listBox = tk.Listbox(self.middle, bg='green')
-        listbox = self.listBox
-        listbox.insert(1, "frytki")
-        listbox.insert(2, "sledziki")
-        listbox.insert(3, "obwarzanki")
+        self.tree = ttk.Treeview(master=self.middle, columns=self.klient_header, show="headings")
+        self._build_tree()
+
+        # self.listBox = tk.Listbox(self.middle, bg='green')
+        # listbox = self.listBox
+        # listbox.insert(1, "frytki")
+        # listbox.insert(2, "sledziki")
+        # listbox.insert(3, "obwarzanki")
 
         # --- StatusBar -------
         status_bar = tk.Frame(self.window)  # , background='yellow')
@@ -52,6 +58,25 @@ class TeatrApp:
 
         # main
         self.window.mainloop()
+
+    klient_header = ['Imię, nazwisko', 'Miejscowość', "Ulica", 'emai', 'telefon']
+
+    def _build_tree(self):
+        for col in self.klient_header:
+            title = col.title()
+            self.tree.heading(col, text=title)  # , command=lambda c=col: sortby(self.tree, c, 0))
+            w = int(1.5 * tkFont.Font().measure(title))
+            self.tree.column(col, width=w)
+
+    def aktywny_edytor(self):
+        self.middle.grid_columnconfigure(0, weight=1)
+        self.tree.grid_forget()
+        self.editor1.grid(row=0, column=0, sticky=tk.NSEW)
+
+    def aktywna_lista(self):
+        self.middle.grid_columnconfigure(0, weight=0)
+        self.editor1.grid_forget()
+        self.tree.grid(row=0, column=0, sticky=tk.NSEW)
 
     def _dadaj_pola_statusu(self, frame):
         status_w = [(10, "w"), (5, "center"), (15, "w"), (25, "w")]
@@ -75,7 +100,7 @@ class TeatrApp:
         tk.Button(bar, text="Lista", fg="blue", command=self.lista_btn_click).pack(side=tk.LEFT, ipadx=2)
         tk.Button(bar, text="Edytor", fg="blue", command=self.edytor_btn_click).pack(side=tk.LEFT, ipadx=2)
 
-    def _doda_glowne_menu(self, glowne_okno):
+    def _dodaj_glowne_menu(self, glowne_okno):
         menu_bar = tk.Menu(glowne_okno)
         file_menu = tk.Menu(menu_bar, tearoff=0)
         file_menu.add_command(label="New", command=self.make_active)
@@ -86,6 +111,13 @@ class TeatrApp:
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=glowne_okno.quit)
         menu_bar.add_cascade(label="File", menu=file_menu)
+
+        # ----
+        klient_menu = tk.Menu(menu_bar, tearoff=0)
+        klient_menu.add_command(label="Nowy", command=self.dodaj_klient)
+        klient_menu.add_command(label="Edytuj", command=self.edytuj_klient)
+        menu_bar.add_cascade(label="Klient", menu=klient_menu)
+
         # ----
         edit_menu = tk.Menu(menu_bar, tearoff=0)
         edit_menu.add_command(label="Undo", command=self.do_nothing)
@@ -104,17 +136,19 @@ class TeatrApp:
         # ----
         glowne_okno.config(menu=menu_bar)
 
-    def clear_editor( self ):
-        self.editor1.delete( 1.0, tk.END )
+    def clear_editor(self):
+        self.editor1.delete(1.0, tk.END)
+
+    def add_editor(self, txt):
+        self.editor1.insert(tk.INSERT, txt)
 
     def callback(*sv):
         app = sv[0]
-        if app.event == KlientEntry.KlientForm.NEW_KLIENT:
-            app.editor1.insert(tk.INSERT, "Nowy klient\n")
-            pass
-        if app.event == KlientEntry.KlientForm.UPDATE_KLIENT:
-            app.editor1.insert(tk.INSERT, "poprawiony klient\n")
-            pass
+        ev_val = app.event.get()
+        if ev_val == KlientEntry.KlientForm.NEW_KLIENT:
+            app.add_editor("Nowy klient\n")
+        if ev_val == KlientEntry.KlientForm.UPDATE_KLIENT:
+            app.add_editor("poprawiony klient\n")
 
     def make_active(app):
         app.redbutton.config(state="active")
@@ -129,23 +163,33 @@ class TeatrApp:
         app.clear_editor()
         # msize = app.editor1.count("1.0", tk.INSERT)
         # app.editor1.insert(tk.INSERT, f'Red Btn size = [{msize[0]}]\n')
-        # app.statusTab[0]["text"] = "RED"
+        app.statusTab[0]["text"] = "RED"
 
     def _btn_cmd_green(app):
-        app.editor1.insert(tk.INSERT, f'Green Btn {app.counter}\n')
+        app.add_editor(f'Green Btn {app.counter}\n')
         app.counter += 1
         app.statusTab[0]["text"] = "GREEN"
+        print(type(app.add_editor))
+        print(app.add_editor)
+        app.test_fun(app.add_editor)
+
+    def test_fun(self, print_fun):
+        print_fun('To jest text\n')
 
     def _btn_klient(app):
-        KlientEntry.KlientForm(app.window, app.event, app.klient)
+        KlientEntry.KlientForm(app.window, app.event, app.klient, True)
+
+    def dodaj_klient(app):
+        KlientEntry.KlientForm(app.window, app.event, app.klient, True)
+
+    def edytuj_klient(app):
+        KlientEntry.KlientForm(app.window, app.event, app.klient, False)
 
     def lista_btn_click(app):
-        app.editor1.grid_forget()
-        app.listBox.grid(row=0, column=0, sticky=tk.NSEW)
+        app.aktywna_lista()
 
     def edytor_btn_click(app):
-        app.editor1.grid(row=0, column=0, sticky=tk.NSEW)
-        app.listBox.grid_forget()
+        app.aktywny_edytor()
 
 
 # ---------------

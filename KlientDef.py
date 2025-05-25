@@ -12,13 +12,10 @@ class Klient:
         return f'Klient:{self.imie_nazwisko}, Adres:{self.miejscowosc}, ul.{self.adres}, email:{self.email}, telefon:{self.telefon}'
 
     def kopiuj_z(self, zrodlo):
-        self.imie_nazwisko = zrodlo.imie_nazwisko
-        self.miejscowosc = zrodlo.miejscowosc
-        self.adres = zrodlo.adres
-        self.email = zrodlo.email
-        self.telefon = zrodlo.telefon
+        for x in Klient.klient_items:
+            self.wstaw_element(x, zrodlo.daj_element(x))
 
-    def dej_element(self, co_dac):
+    def daj_element(self, co_dac):
         v = ""
         if co_dac == "imie":
             v = self.imie_nazwisko

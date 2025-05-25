@@ -61,16 +61,17 @@ class BaseForm(tk.Toplevel):
         self.geometry("+%d+%d" % (x + (w - form_w) / 2, y + (h - form_h) / 2))
         self.geometry(f'{form_w}x{form_h}')
 
-    def _add_edit_items(self, frame):
-        pass
-
-    def _get_form_size(self):
-        pass
-
     def _anuluj_btn_click(self):
         self.destroy()
 
     def _clear_btn_click(self):
+        for x in range(len(self._varTab)):
+            self._varTab[x].set("")
+
+    def _add_edit_items(self, frame):
+        pass
+
+    def _get_form_size(self):
         pass
 
     def _ok_btn_click(self):

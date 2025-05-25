@@ -7,18 +7,15 @@ class KlientForm(BaseForm):
     NEW_KLIENT = 101
     UPDATE_KLIENT = 102
 
-    def __init__(self, parent, event, klient=None):
+    def __init__(self, parent, event, klient=None, nowy=True):
 
         self.klient = klient
         self.event = event
 
-
-
         super().__init__(parent, len(Klient.klient_items))
 
-        self._nowy= True
-        if klient is not None:
-            self._nowy = False
+        self._nowy = nowy
+        if not nowy:
             self._set_klient(klient)
 
     def _get_form_size(self):
@@ -31,13 +28,9 @@ class KlientForm(BaseForm):
             idx = Klient.klient_items.index(x)
             self._add_edit_item(frame, labels[idx], self._varTab[idx])
 
-    def _clear_btn_click(self):
-        for x in range(len(Klient.klient_items)):
-            self._varTab[x].set("")
-
     def _set_klient(self, klient):
         for x in Klient.klient_items:
-            v = klient.dej_element(x)
+            v = klient.daj_element(x)
             idx = Klient.klient_items.index(x)
             self._varTab[idx].set(v)
 
@@ -53,7 +46,7 @@ class KlientForm(BaseForm):
         if dane_ok:
             self.klient.kopiuj_z(tmpKlient)
             if self._nowy:
-                self.set = self.event.set(self.NEW_KLIENT)
+                self.event.set(self.NEW_KLIENT)
             else:
-                self.set = self.event.set(self.UPDATE_KLIENT)
+                self.event.set(self.UPDATE_KLIENT)
             self.destroy()

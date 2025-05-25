@@ -54,7 +54,7 @@ class TeatrApp:
         self.window.mainloop()
 
     def _dadaj_pola_statusu(self, frame):
-        status_w = [(10, "w"), (5, "center"), (15, "w"), (20, "w")]
+        status_w = [(10, "w"), (5, "center"), (15, "w"), (25, "w")]
         idx = 1
         for w in status_w:
             panel = tk.Label(frame, text=idx, width=w[0], anchor=w[1], relief="sunken")
@@ -63,7 +63,7 @@ class TeatrApp:
             idx += 1
 
     def _dodaj_szybkie_buttony(self, bar):
-        self.redbutton = tk.Button(bar, text="Red", fg="red", command=self.redbtn_onclick)
+        self.redbutton = tk.Button(bar, text="Wyczyść", fg="red", command=self.clear_btn_click)
         self.redbutton.pack(side=tk.LEFT, ipadx=0)
 
         greenbutton = tk.Button(bar, text="Green", fg="green", command=self._btn_cmd_green)
@@ -104,6 +104,9 @@ class TeatrApp:
         # ----
         glowne_okno.config(menu=menu_bar)
 
+    def clear_editor( self ):
+        self.editor1.delete( 1.0, tk.END )
+
     def callback(*sv):
         app = sv[0]
         if app.event == KlientEntry.KlientForm.NEW_KLIENT:
@@ -122,10 +125,11 @@ class TeatrApp:
     def do_nothing(app):
         print(type(app))
 
-    def redbtn_onclick(app):
-        msize = app.editor1.count("1.0", tk.INSERT)
-        app.editor1.insert(tk.INSERT, f'Red Btn size = [{msize[0]}]\n')
-        app.statusTab[0]["text"] = "RED"
+    def clear_btn_click(app):
+        app.clear_editor()
+        # msize = app.editor1.count("1.0", tk.INSERT)
+        # app.editor1.insert(tk.INSERT, f'Red Btn size = [{msize[0]}]\n')
+        # app.statusTab[0]["text"] = "RED"
 
     def _btn_cmd_green(app):
         app.editor1.insert(tk.INSERT, f'Green Btn {app.counter}\n')

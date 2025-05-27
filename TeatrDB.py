@@ -1,8 +1,12 @@
 # --------------------------------------------------------
 # pip install mysql-connector-python
+#
+
+
 import config
 import mysql.connector
 from mysql.connector import errorcode
+import KlientDef
 
 
 def init_database():
@@ -78,6 +82,7 @@ TABLES['bilety'] = (
     "  CONSTRAINT fk_klient FOREIGN KEY (klient_no) REFERENCES klienci(klient_no)"
     ") ENGINE=InnoDB")
 
+
 #    "  FOREIGN KEY ('klientimprez_no') REFERENCES imprezy(imprez_no),"
 
 
@@ -85,7 +90,6 @@ TABLES['bilety'] = (
 
 
 def init_tabele(cursor):
-
     for table_name in TABLES:
         table_description = TABLES[table_name]
         try:
@@ -100,9 +104,37 @@ def init_tabele(cursor):
             print("OK")
 
 
+def init_db():
+    mydb = init_database()
+    if mydb is not None:
+        my_cursor = mydb.cursor()
+        init_tabele(my_cursor)
+        init_database()
+        init_tabele()
+        return True
+    return False
+
+
+def add_klient(klient):
+    db1 = init_database()
+    cursor1 = db1.cursor()
+
+    sql = f'INSERT INTO {TABELA_KLIENT} (name, city, street, email, phone) VALUES (%s, %s, %s, %s, %s)'
+    val = (klient.imie_nazwisko, klient.miejscowosc, klient.adres, klient.email, klient.telefon)
+    cursor1.execute(sql, val)
+    db1.commit()
+
+
+def load_klints():
+    db1 = init_database()
+    cursor1 = db1.cursor()
+    cursor1.execute(f"SELECT * FROM {TABELA_KLIENT}")
+    myresult = cursor1.fetchall()
+    return myresult
+
+
 # ---Test----------------------------------
 if __name__ == "__main__":
-
     print("\n\n------Teatr-------")
 
     mydb = init_database()
@@ -110,6 +142,3 @@ if __name__ == "__main__":
     init_tabele(my_cursor)
 
     my_cursor.execute("SHOW TABLES")
-
-    for x in my_cursor:
-        print(x)

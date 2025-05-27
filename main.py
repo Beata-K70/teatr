@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.font as tkFont
 from tkinter import ttk
 import KlientEntry
+import TeatrDB
 
 from KlientDef import *
 
@@ -59,14 +60,45 @@ class TeatrApp:
         # main
         self.window.mainloop()
 
-    klient_header = ['Imię, nazwisko', 'Miejscowość', "Ulica", 'emai', 'telefon']
+    klient_header = ['id', 'Imię, nazwisko', 'Miejscowość', "Ulica", 'emai', 'telefon']
+
+    def handleClick(app):
+        print('handleClick')
+
+    def handleRightClick(self, event):
+        focused = self.tree.focus()
+        if focused == "":
+            item_state=tk.DISABLED
+        else:
+            item_state=tk.ACTIVE
+        self.context_menu.entryconfigure("Edytuj", state=item_state)
+        self.context_menu.post(event.x_root, event.y_root)
 
     def _build_tree(self):
+        self.context_menu = tk.Menu(self.window, tearoff=0, )
+        self.context_menu.add_command(label="Edytuj", command=self.edytuj_klient)
+        self.context_menu.add_command(label="Option 2", command=self.handleClick)
+        self.context_menu.add_separator()
+        self.context_menu.add_command(label="Quit", command=self.window.quit)
+
+
+        self.tree.bind("<Button-3>", self.handleRightClick)
+
         for col in self.klient_header:
             title = col.title()
             self.tree.heading(col, text=title)  # , command=lambda c=col: sortby(self.tree, c, 0))
             w = int(1.5 * tkFont.Font().measure(title))
             self.tree.column(col, width=w)
+
+    def fill_list_klients(self, klients):
+        for i in self.tree.get_children():
+            self.tree.delete(i)
+        for item in klients:
+            self.tree.insert('', 'end', values=item)
+            for ix, val in enumerate(item):
+                col_w = tkFont.Font().measure(val)
+                if self.tree.column(self.klient_header[ix], width=None) < col_w:
+                    self.tree.column(self.klient_header[ix], width=col_w)
 
     def aktywny_edytor(self):
         self.middle.grid_columnconfigure(0, weight=1)
@@ -74,7 +106,7 @@ class TeatrApp:
         self.editor1.grid(row=0, column=0, sticky=tk.NSEW)
 
     def aktywna_lista(self):
-        self.middle.grid_columnconfigure(0, weight=0)
+        self.middle.grid_columnconfigure(0, weight=1)
         self.editor1.grid_forget()
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
 
@@ -147,6 +179,7 @@ class TeatrApp:
         ev_val = app.event.get()
         if ev_val == KlientEntry.KlientForm.NEW_KLIENT:
             app.add_editor("Nowy klient\n")
+            TeatrDB.add_klient(app.klient)
         if ev_val == KlientEntry.KlientForm.UPDATE_KLIENT:
             app.add_editor("poprawiony klient\n")
 
@@ -187,6 +220,8 @@ class TeatrApp:
 
     def lista_btn_click(app):
         app.aktywna_lista()
+        klients = TeatrDB.load_klints()
+        app.fill_list_klients(klients)
 
     def edytor_btn_click(app):
         app.aktywny_edytor()
